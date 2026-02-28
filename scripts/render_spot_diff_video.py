@@ -177,6 +177,7 @@ def build_question_scene(
     answer1_audio = safe_audio(assets / "answer1.mp3", duration=1.5)
     answer2_audio = safe_audio(assets / "answer2.mp3", duration=1.5)
     answer3_audio = safe_audio(assets / "answer3.mp3", duration=1.5)
+    cheer_audio = safe_audio(assets / "cheer.mp3", duration=2.0)
 
     count10 = safe_video(assets / "count10.mp4", duration=10.0)
     alarm = safe_video(assets / "alarm.mp4", duration=2.0)
@@ -184,7 +185,7 @@ def build_question_scene(
     image_start = float(timing.get("image_start_delay", 0.5))
     countdown_start = image_start
     countdown_duration = float(timing.get("countdown_seconds", 90.0))
-    answer_gap_after_seconds = float(timing.get("answer_gap_after_seconds", 5.0))
+    answer_gap_after_seconds = float(timing.get("answer_gap_after_seconds", 4.0))
 
     after_countdown_t = countdown_start + countdown_duration
     alarm_start = after_countdown_t
@@ -192,7 +193,8 @@ def build_question_scene(
     answer1_start = answer_start + answer_audio.duration
     answer2_start = answer1_start + answer1_audio.duration + answer_gap_after_seconds
     answer3_start = answer2_start + answer2_audio.duration + answer_gap_after_seconds
-    scene_duration = answer3_start + max(answer3_audio.duration, 1.5) + 0.5
+    cheer_start = answer3_start + answer3_audio.duration + 2.0
+    scene_duration = cheer_start + cheer_audio.duration + 2.0
 
     bg_loop = loop_background(bg_base, scene_duration)
 
@@ -219,7 +221,7 @@ def build_question_scene(
             .resized(width=880)
             .with_start(countdown_start)
             .with_duration(countdown_duration)
-            .with_position(("center", 16))
+            .with_position(("center", 0))
         )
 
     count10_start = countdown_start + max(0.0, countdown_duration - 10.0)
@@ -270,6 +272,7 @@ def build_question_scene(
         answer1_audio.with_start(answer1_start),
         answer2_audio.with_start(answer2_start),
         answer3_audio.with_start(answer3_start),
+        cheer_audio.with_start(cheer_start),
     ]
     if count10.audio is not None:
         scene_audio_layers.append(count10.audio.with_start(count10_start))
