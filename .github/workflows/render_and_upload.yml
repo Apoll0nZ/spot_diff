@@ -57,7 +57,8 @@ jobs:
         run: |
           python scripts/download_assets.py --bucket "$S3_BUCKET" --prefix "$S3_PREFIX" --dest assets/input
 
-      - name: Render video
+      - name: Render video (no upload)
+        if: ${{ !inputs.upload_to_youtube }}
         run: |
           python scripts/run_pipeline.py \
             --job config/dummy_job.json \
