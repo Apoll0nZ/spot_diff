@@ -1,0 +1,34 @@
+{
+  "title": "脳トレ間違い探し Vol.1",
+  "description": "ダミーデータで生成したサンプルです。",
+  "random_seed": 42,
+  "questions": [
+    {
+      "left_image": "Q1_Level1_Left.png",
+      "right_image": "Q1_Level1_Right.png",
+      "diff_points": [
+        {"left_x": 270, "left_y": 380, "right_x": 1250, "right_y": 400, "radius": 38},
+        {"left_x": 420, "left_y": 570, "right_x": 1390, "right_y": 580, "radius": 38},
+        {"left_x": 720, "left_y": 690, "right_x": 1700, "right_y": 710, "radius": 38}
+      ]
+    },
+    {
+      "left_image": "Q2_Level2_Left.png",
+      "right_image": "Q2_Level2_Right.png",
+      "diff_points": [
+        {"left_x": 230, "left_y": 360, "right_x": 1200, "right_y": 370, "radius": 38},
+        {"left_x": 500, "left_y": 560, "right_x": 1480, "right_y": 580, "radius": 38},
+        {"left_x": 690, "left_y": 660, "right_x": 1670, "right_y": 690, "radius": 38}
+      ]
+    },
+    {
+      "left_image": "Q3_Level3_Left.png",
+      "right_image": "Q3_Level3_Right.png",
+      "diff_points": [
+        {"left_x": 240, "left_y": 390, "right_x": 1220, "right_y": 410, "radius": 38},
+        {"left_x": 450, "left_y": 510, "right_x": 1430, "right_y": 540, "radius": 38},
+        {"left_x": 800, "left_y": 710, "right_x": 1780, "right_y": 730, "radius": 38}
+      ]
+    }
+  ]
+}

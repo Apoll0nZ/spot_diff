@@ -1,0 +1,21 @@
+{
+  "title": "smoke",
+  "description": "short smoke test",
+  "random_seed": 1,
+  "timing": {
+    "countdown_seconds": 12,
+    "image_start_delay": 0.2,
+    "marker_gap_seconds": 0.8
+  },
+  "questions": [
+    {
+      "left_image": "Q1_Level1_Left.png",
+      "right_image": "Q1_Level1_Right.png",
+      "diff_points": [
+        {"left_x": 270, "left_y": 380, "right_x": 1250, "right_y": 400, "radius": 38},
+        {"left_x": 420, "left_y": 570, "right_x": 1390, "right_y": 580, "radius": 38},
+        {"left_x": 720, "left_y": 690, "right_x": 1700, "right_y": 710, "radius": 38}
+      ]
+    }
+  ]
+}
