@@ -228,16 +228,16 @@ def build_question_scene(
     count10_clip = (
         apply_chroma_key(
             count10.resized(height=170),
-            key_color=(0, 255, 0),
-            threshold=float(timing.get("count10_chroma_threshold", 90)),
+            key_color=(0, 0, 255),
+            threshold=float(timing.get("count10_chroma_threshold", 140)),
         )
         .with_start(count10_start)
         .with_position((VIDEO_W - 230, 16))
     )
     alarm_clip = apply_chroma_key(
         alarm.resized((VIDEO_W, VIDEO_H)),
-        key_color=(0, 0, 255),
-        threshold=float(timing.get("alarm_chroma_threshold", 90)),
+        key_color=(0, 255, 0),
+        threshold=float(timing.get("alarm_chroma_threshold", 140)),
     ).with_start(alarm_start)
 
     diffs = q_diff_points(q_data)
