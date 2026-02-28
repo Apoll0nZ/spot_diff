@@ -14,9 +14,11 @@ from moviepy import (
     ImageClip,
     VideoClip,
     VideoFileClip,
+    concatenate_audioclips,
     concatenate_videoclips,
 )
 from moviepy.audio.AudioClip import AudioClip
+from moviepy.video.fx.MaskColor import MaskColor
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -61,6 +63,21 @@ def loop_background(bg_clip: VideoFileClip, duration: float):
         return base.subclipped(0, duration)
     loops = int(duration // base.duration) + 1
     return concatenate_videoclips([base] * loops, method="compose").subclipped(0, duration)
+
+
+def loop_audio(audio_clip: AudioClip, duration: float):
+    if audio_clip.duration >= duration:
+        return audio_clip.subclipped(0, duration)
+    loops = int(duration // audio_clip.duration) + 1
+    return concatenate_audioclips([audio_clip] * loops).subclipped(0, duration)
+
+
+def apply_chroma_key(
+    clip: VideoFileClip, key_color: Tuple[int, int, int], threshold: float = 90, stiffness: float = 6
+):
+    return clip.with_effects(
+        [MaskColor(color=key_color, threshold=threshold, stiffness=stiffness)]
+    )
 
 
 def make_countdown_clip(duration: float, start_seconds: int = 90):
@@ -167,14 +184,14 @@ def build_question_scene(
     image_start = float(timing.get("image_start_delay", 0.5))
     countdown_start = image_start
     countdown_duration = float(timing.get("countdown_seconds", 90.0))
-    marker_gap = float(timing.get("marker_gap_seconds", 2.0))
+    answer_gap_after_seconds = float(timing.get("answer_gap_after_seconds", 5.0))
 
     after_countdown_t = countdown_start + countdown_duration
     alarm_start = after_countdown_t
     answer_start = alarm_start + alarm.duration
     answer1_start = answer_start + answer_audio.duration
-    answer2_start = answer1_start + marker_gap
-    answer3_start = answer2_start + marker_gap
+    answer2_start = answer1_start + answer1_audio.duration + answer_gap_after_seconds
+    answer3_start = answer2_start + answer2_audio.duration + answer_gap_after_seconds
     scene_duration = answer3_start + max(answer3_audio.duration, 1.5) + 0.5
 
     bg_loop = loop_background(bg_base, scene_duration)
@@ -194,18 +211,32 @@ def build_question_scene(
         side="right",
     )
 
-    countdown = make_countdown_clip(
-        duration=countdown_duration, start_seconds=int(countdown_duration)
-    ).with_start(
-        countdown_start
-    )
+    question_title_clip = None
+    question_title_path = assets / "question_title.png"
+    if question_title_path.exists():
+        question_title_clip = (
+            ImageClip(str(question_title_path))
+            .resized(width=880)
+            .with_start(countdown_start)
+            .with_duration(countdown_duration)
+            .with_position(("center", 16))
+        )
 
+    count10_start = countdown_start + max(0.0, countdown_duration - 10.0)
     count10_clip = (
-        count10.resized(height=240)
-        .with_start(countdown_start + max(0.0, countdown_duration - 10.0))
-        .with_position((VIDEO_W - 320, 20))
+        apply_chroma_key(
+            count10.resized(height=170),
+            key_color=(0, 255, 0),
+            threshold=float(timing.get("count10_chroma_threshold", 90)),
+        )
+        .with_start(count10_start)
+        .with_position((VIDEO_W - 230, 16))
     )
-    alarm_clip = alarm.resized((VIDEO_W, VIDEO_H)).with_start(alarm_start)
+    alarm_clip = apply_chroma_key(
+        alarm.resized((VIDEO_W, VIDEO_H)),
+        key_color=(0, 0, 255),
+        threshold=float(timing.get("alarm_chroma_threshold", 90)),
+    ).with_start(alarm_start)
 
     diffs = q_diff_points(q_data)
     colors = [
@@ -225,10 +256,11 @@ def build_question_scene(
         ).with_start(marker_starts[idx])
         marker_clips.append(marker)
 
-    scene_video = CompositeVideoClip(
-        [bg_loop, left_img, right_img, countdown, count10_clip, *marker_clips, alarm_clip],
-        size=(VIDEO_W, VIDEO_H),
-    ).with_duration(scene_duration)
+    scene_layers = [bg_loop, left_img, right_img]
+    if question_title_clip is not None:
+        scene_layers.append(question_title_clip)
+    scene_layers.extend([count10_clip, *marker_clips, alarm_clip])
+    scene_video = CompositeVideoClip(scene_layers, size=(VIDEO_W, VIDEO_H)).with_duration(scene_duration)
 
     scene_audio_layers = [
         description_audio.with_start(image_start),
@@ -237,11 +269,12 @@ def build_question_scene(
         answer_audio.with_start(answer_start),
         answer1_audio.with_start(answer1_start),
         answer2_audio.with_start(answer2_start),
+        answer3_audio.with_start(answer3_start),
     ]
-    if (assets / "answer3.mp3").exists():
-        scene_audio_layers.append(answer3_audio.with_start(answer3_start))
-    else:
-        scene_audio_layers.append(answer2_audio.with_start(answer3_start))
+    if count10.audio is not None:
+        scene_audio_layers.append(count10.audio.with_start(count10_start))
+    if alarm.audio is not None:
+        scene_audio_layers.append(alarm.audio.with_start(alarm_start))
 
     scene_audio = CompositeAudioClip(scene_audio_layers)
     scene_video = scene_video.with_audio(scene_audio)
@@ -263,7 +296,7 @@ def build_video(job: dict, assets: Path, output_path: Path):
         questions.append(build_question_scene(i, q, assets, used_backgrounds, timing))
 
     main_part = concatenate_videoclips(questions, method="compose")
-    bgm_clip = main_bgm.subclipped(0, min(main_bgm.duration, main_part.duration))
+    bgm_clip = loop_audio(main_bgm, main_part.duration)
 
     if main_part.audio is not None:
         main_audio = CompositeAudioClip([main_part.audio, bgm_clip.with_start(0)])
