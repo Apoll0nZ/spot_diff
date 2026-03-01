@@ -80,6 +80,19 @@ def apply_chroma_key(
     )
 
 
+def make_title_text_clip(duration: float):
+    title_text = "3つの間違いを探してください"
+
+    def make_frame(_t: float):
+        img = Image.new("RGBA", (1180, 92), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(img)
+        draw.rounded_rectangle((0, 0, 1180, 92), radius=18, fill=(0, 0, 0, 155))
+        draw.text((265, 28), title_text, fill=(255, 255, 255, 255))
+        return np.array(img)
+
+    return VideoClip(frame_function=make_frame, duration=duration).with_fps(FPS)
+
+
 def make_countdown_clip(duration: float, start_seconds: int = 90):
     # PILでフレーム生成してImageMagick依存を回避
     def make_frame(t: float):
@@ -213,16 +226,11 @@ def build_question_scene(
         side="right",
     )
 
-    question_title_clip = None
-    question_title_path = assets / "question_title.png"
-    if question_title_path.exists():
-        question_title_clip = (
-            ImageClip(str(question_title_path))
-            .resized(width=880)
-            .with_start(countdown_start)
-            .with_duration(countdown_duration)
-            .with_position(("center", 0))
-        )
+    question_title_clip = (
+        make_title_text_clip(duration=countdown_duration)
+        .with_start(countdown_start)
+        .with_position(("center", 0))
+    )
 
     count10_start = countdown_start + max(0.0, countdown_duration - 10.0)
     count10_clip = (
@@ -259,8 +267,7 @@ def build_question_scene(
         marker_clips.append(marker)
 
     scene_layers = [bg_loop, left_img, right_img]
-    if question_title_clip is not None:
-        scene_layers.append(question_title_clip)
+    scene_layers.append(question_title_clip)
     scene_layers.extend([count10_clip, *marker_clips, alarm_clip])
     scene_video = CompositeVideoClip(scene_layers, size=(VIDEO_W, VIDEO_H)).with_duration(scene_duration)
 
