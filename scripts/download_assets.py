@@ -21,7 +21,7 @@ def main():
     total = 0
 
     # 1. 動画素材を assets/ からダウンロード
-    assets_prefix = os.environ.get("S3_ASSETS_PREFIX", "assets/")
+    assets_prefix = os.environ.get("S3_PREFIX", "assets/")
     for page in s3.get_paginator("list_objects_v2").paginate(
         Bucket=args.bucket, Prefix=assets_prefix
     ):
