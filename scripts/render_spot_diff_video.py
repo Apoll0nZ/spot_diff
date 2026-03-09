@@ -153,17 +153,20 @@ def circle_overlay(
 
 
 def q_diff_points(q_data: dict) -> List[DiffPoint]:
-    orig_h = q_data.get("image_height", 1024)
-    scale = IMAGE_DISPLAY_H / orig_h  # 高さのスケール係数（幅も同じ比率）
+    orig_h = q_data.get("image_height", 1200)
+    orig_w = q_data.get("image_width", 896)
+    scale = IMAGE_DISPLAY_H / orig_h
+    img_display_w = int(orig_w * scale)
+    center_offset_x = (VIDEO_W - img_display_w * 2) // 2
 
     out = []
     for p in q_data.get("diff_points", []):
         out.append(DiffPoint(
-            left_x =CORRECT_LEFT_TARGET_X + int(p["left_x"]  * scale),
-            left_y =CORRECT_IMAGE_TARGET_Y + int(p["left_y"]  * scale),
-            right_x=CORRECT_RIGHT_TARGET_X + int(p["right_x"] * scale),
-            right_y=CORRECT_IMAGE_TARGET_Y + int(p["right_y"] * scale),
-            radius =max(20, int(p.get("radius", 36)   * scale)),
+            left_x  = LEFT_TARGET_X  + center_offset_x + int(p["left_x"]  * scale),
+            left_y  = IMAGE_TARGET_Y + int(p["left_y"]  * scale),
+            right_x = RIGHT_TARGET_X + center_offset_x + int(p["right_x"] * scale),
+            right_y = IMAGE_TARGET_Y + int(p["right_y"] * scale),
+            radius  = 60,
         ))
     return out
 

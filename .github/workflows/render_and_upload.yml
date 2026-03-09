@@ -57,6 +57,17 @@ jobs:
         run: |
           python scripts/download_assets.py --bucket "$S3_BUCKET" --prefix "$S3_PREFIX" --dest assets/input
 
+      - name: Run finalize-lambda to generate video_render.json
+        run: |
+          python lambda_local/functions/spot-diff-finalize-lambda/lambda_function.py
+
+      - name: Render video from S3 assets
+        run: |
+          python scripts/run_pipeline.py \
+            --job lambda_local/functions/spot-diff-finalize-lambda/video_render.json \
+            --assets assets/input \
+            --output out/spot_diff.mp4
+
       - name: Render video (no upload)
         if: ${{ !inputs.upload_to_youtube }}
         run: |
