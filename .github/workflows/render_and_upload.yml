@@ -62,15 +62,21 @@ jobs:
         run: |
           python scripts/download_assets.py \
             --bucket "$S3_BUCKET" \
-            --prefix "$S3_PREFIX/${{ inputs.run_id }}" \
+            --prefix "$S3_PREFIX" \
             --dest assets/input
 
       - name: Render video (no upload)
         if: ${{ !inputs.upload_to_youtube }}
         run: |
-          JOB_JSON=$( [ -f assets/input/video_render.json ] \
-            && echo assets/input/video_render.json \
-            || echo config/dummy_job.json )
+          # S3構造に合わせてvideo_render.jsonを探す
+          if [ -f assets/input/manifest.json ]; then
+            echo "Using manifest.json from S3"
+            JOB_JSON="assets/input/manifest.json"
+          else
+            echo "Using dummy_job.json (fallback)"
+            JOB_JSON="config/dummy_job.json"
+          fi
+          
           python scripts/run_pipeline.py \
             --job "$JOB_JSON" \
             --assets assets/input \
