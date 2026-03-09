@@ -44,16 +44,6 @@ def main():
     except Exception as e:
         print(f"video_render.json not found: {e}")
 
-    # manifest.jsonをダウンロード（フォールバック）
-    try:
-        manifest_dest = args.dest / "manifest.json"
-        manifest_key = f"{args.prefix}manifest.json"
-        s3.download_file(args.bucket, manifest_key, str(manifest_dest))
-        print(f"downloaded: s3://{args.bucket}/{manifest_key} -> {manifest_dest}")
-        total += 1
-    except Exception as e:
-        print(f"manifest.json not found: {e}")
-
     print(f"done. downloaded files: {total}")
 
 
