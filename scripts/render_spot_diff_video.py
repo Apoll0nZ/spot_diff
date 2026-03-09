@@ -26,6 +26,11 @@ VIDEO_W = 1920
 VIDEO_H = 1080
 FPS = 30
 
+# 正しい画像配置用の定数
+CORRECT_LEFT_TARGET_X = 20
+CORRECT_RIGHT_TARGET_X = 970
+CORRECT_IMAGE_TARGET_Y = 150
+
 
 @dataclass
 class DiffPoint:
@@ -111,9 +116,9 @@ def make_countdown_clip(duration: float, start_seconds: int = 90):
 
 
 def slide_in_image(path: Path, target_x: int, target_y: int, start_t: float, side: str):
-    img = ImageClip(str(path)).resized((930, 780))
+    img = ImageClip(str(path)).resized(height=IMAGE_DISPLAY_H)
     in_duration = 0.8
-    off_x = -929 if side == "left" else VIDEO_W - 1
+    off_x = -img.w - 1 if side == "left" else VIDEO_W + 1
 
     def pos(t: float):
         local_t = t
@@ -148,17 +153,18 @@ def circle_overlay(
 
 
 def q_diff_points(q_data: dict) -> List[DiffPoint]:
+    orig_h = q_data.get("image_height", 1024)
+    scale = IMAGE_DISPLAY_H / orig_h  # 高さのスケール係数（幅も同じ比率）
+
     out = []
     for p in q_data.get("diff_points", []):
-        out.append(
-            DiffPoint(
-                left_x=int(p["left_x"]),
-                left_y=int(p["left_y"]),
-                right_x=int(p["right_x"]),
-                right_y=int(p["right_y"]),
-                radius=int(p.get("radius", 36)),
-            )
-        )
+        out.append(DiffPoint(
+            left_x =CORRECT_LEFT_TARGET_X + int(p["left_x"]  * scale),
+            left_y =CORRECT_IMAGE_TARGET_Y + int(p["left_y"]  * scale),
+            right_x=CORRECT_RIGHT_TARGET_X + int(p["right_x"] * scale),
+            right_y=CORRECT_IMAGE_TARGET_Y + int(p["right_y"] * scale),
+            radius =max(20, int(p.get("radius", 36)   * scale)),
+        ))
     return out
 
 
@@ -213,15 +219,15 @@ def build_question_scene(
 
     left_img = slide_in_image(
         assets / q_data["left_image"],
-        target_x=20,
-        target_y=150,
+        target_x=CORRECT_LEFT_TARGET_X,
+        target_y=CORRECT_IMAGE_TARGET_Y,
         start_t=image_start,
         side="left",
     )
     right_img = slide_in_image(
         assets / q_data["right_image"],
-        target_x=970,
-        target_y=150,
+        target_x=CORRECT_RIGHT_TARGET_X,
+        target_y=CORRECT_IMAGE_TARGET_Y,
         start_t=image_start,
         side="right",
     )
