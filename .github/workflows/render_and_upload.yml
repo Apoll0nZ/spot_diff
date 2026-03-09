@@ -3,6 +3,11 @@ name: Render And Upload SpotDiff Video
 on:
   workflow_dispatch:
     inputs:
+      run_id:
+        description: "Pipeline run_id (S3のプレフィックス)"
+        type: string
+        required: false
+        default: ""
       use_dummy_assets:
         description: "Use generated dummy assets"
         type: boolean
@@ -55,32 +60,30 @@ jobs:
       - name: Prepare assets (S3)
         if: ${{ !inputs.use_dummy_assets }}
         run: |
-          python scripts/download_assets.py --bucket "$S3_BUCKET" --prefix "$S3_PREFIX" --dest assets/input
-
-      - name: Run finalize-lambda to generate video_render.json
-        run: |
-          python lambda_local/functions/spot-diff-finalize-lambda/lambda_function.py
-
-      - name: Render video from S3 assets
-        run: |
-          python scripts/run_pipeline.py \
-            --job lambda_local/functions/spot-diff-finalize-lambda/video_render.json \
-            --assets assets/input \
-            --output out/spot_diff.mp4
+          python scripts/download_assets.py \
+            --bucket "$S3_BUCKET" \
+            --prefix "$S3_PREFIX/${{ inputs.run_id }}" \
+            --dest assets/input
 
       - name: Render video (no upload)
         if: ${{ !inputs.upload_to_youtube }}
         run: |
+          JOB_JSON=$( [ -f assets/input/video_render.json ] \
+            && echo assets/input/video_render.json \
+            || echo config/dummy_job.json )
           python scripts/run_pipeline.py \
-            --job config/dummy_job.json \
+            --job "$JOB_JSON" \
             --assets assets/input \
             --output out/spot_diff.mp4
 
       - name: Upload video to YouTube
         if: ${{ inputs.upload_to_youtube }}
         run: |
+          JOB_JSON=$( [ -f assets/input/video_render.json ] \
+            && echo assets/input/video_render.json \
+            || echo config/dummy_job.json )
           python scripts/run_pipeline.py \
-            --job config/dummy_job.json \
+            --job "$JOB_JSON" \
             --assets assets/input \
             --output out/spot_diff.mp4 \
             --upload \

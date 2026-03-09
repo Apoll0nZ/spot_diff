@@ -19,6 +19,7 @@ def main():
 
     args.dest.mkdir(parents=True, exist_ok=True)
 
+    # 画像ファイルをダウンロード
     paginator = s3.get_paginator("list_objects_v2")
     total = 0
     for page in paginator.paginate(Bucket=args.bucket, Prefix=args.prefix):
@@ -32,6 +33,18 @@ def main():
             s3.download_file(args.bucket, key, str(local))
             total += 1
             print(f"downloaded: s3://{args.bucket}/{key} -> {local}")
+
+    # video_render.jsonをダウンロード（プレフィックスの親ディレクトリから）
+    parent_prefix = args.prefix.rsplit("/", 1)[0] if "/" in args.prefix else ""
+    video_render_key = f"{parent_prefix}/video_render.json" if parent_prefix else "video_render.json"
+    
+    try:
+        video_render_dest = args.dest / "video_render.json"
+        s3.download_file(args.bucket, video_render_key, str(video_render_dest))
+        print(f"downloaded: s3://{args.bucket}/{video_render_key} -> {video_render_dest}")
+        total += 1
+    except Exception as e:
+        print(f"video_render.json not found: {e}")
 
     print(f"done. downloaded files: {total}")
 
