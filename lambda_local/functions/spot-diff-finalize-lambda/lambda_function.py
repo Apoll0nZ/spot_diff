@@ -106,8 +106,8 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         valid_diff_points = []
         
         # diff_pointsからimage_x/image_yを参照して差分ポイントを生成
-        diff_points = diff_json.get("diff_points", [])
-        for dp in diff_points:
+        diff_points_src = diff_json.get("diff_points", [])
+        for dp in diff_points_src:
             # image_x/image_yを元画像上の中心座標として使用
             diff_point = {
                 "left_x": dp["image_x"],
