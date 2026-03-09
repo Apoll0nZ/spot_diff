@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
+import urllib.request
 from typing import Any, Dict, List
 
 import boto3
@@ -27,6 +29,42 @@ def _put_json(s3_client: Any, bucket: str, key: str, payload: Dict[str, Any]) ->
 def _get_json(s3_client: Any, bucket: str, key: str) -> Dict[str, Any]:
     body = s3_client.get_object(Bucket=bucket, Key=key)["Body"].read()
     return json.loads(body.decode("utf-8"))
+
+
+def trigger_github_actions(run_id: str) -> None:
+    """GitHub Actionsを起動する"""
+    token = os.environ.get("GITHUB_TOKEN")
+    repo = os.environ.get("GITHUB_REPO")
+    
+    if not token or not repo:
+        LOGGER.warning("GITHUB_TOKEN or GITHUB_REPO not set")
+        return
+    
+    url = f"https://api.github.com/repos/{repo}/actions/workflows/render_and_upload.yml/dispatches"
+    
+    payload = json.dumps({
+        "ref": "main",
+        "inputs": {
+            "run_id": run_id,
+            "use_dummy_assets": "false",
+            "upload_to_youtube": "false"
+        }
+    }).encode()
+    
+    req = urllib.request.Request(url, data=payload, headers={
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json"
+    }, method="POST")
+    
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.status == 204:
+                LOGGER.info(f"GitHub Actions triggered successfully for run_id: {run_id}")
+            else:
+                LOGGER.error(f"Failed to trigger GitHub Actions: {response.status}")
+    except Exception as e:
+        LOGGER.error(f"Error triggering GitHub Actions: {e}")
 
 
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
@@ -123,4 +161,8 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     manifest["manifest_s3_key"] = manifest_key
     manifest["video_render_s3_key"] = video_render_key
     LOGGER.info("finalize completed run_id=%s", run_id)
+    
+    # GitHub Actionsを起動してvideo_render.jsonを生成
+    trigger_github_actions(run_id)
+    
     return manifest
