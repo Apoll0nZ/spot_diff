@@ -62,7 +62,7 @@ jobs:
         run: |
           python scripts/download_assets.py \
             --bucket "$S3_BUCKET" \
-            --prefix "$S3_PREFIX" \
+            --prefix "$S3_PREFIX/${{ inputs.run_id }}/" \
             --dest assets/input
 
       - name: Render video (no upload)
