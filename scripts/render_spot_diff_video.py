@@ -160,15 +160,20 @@ def q_diff_points(q_data: dict) -> List[DiffPoint]:
     img_display_w = int(orig_w * scale)
     center_offset_x = (VIDEO_W - img_display_w * 2) // 2
 
+    print(f"[q_diff_points] orig={orig_w}x{orig_h} scale={scale:.4f} img_display_w={img_display_w} center_offset_x={center_offset_x}")
+    print(f"[q_diff_points] left_image_x={LEFT_TARGET_X + center_offset_x} right_image_x={RIGHT_TARGET_X + center_offset_x} image_y={IMAGE_TARGET_Y}")
+
     out = []
-    for p in q_data.get("diff_points", []):
-        out.append(DiffPoint(
-            left_x  = LEFT_TARGET_X + center_offset_x + int(p["left_x"]  * scale),
+    for i, p in enumerate(q_data.get("diff_points", [])):
+        dp = DiffPoint(
+            left_x  = LEFT_TARGET_X  + center_offset_x + int(p["left_x"]  * scale),
             left_y  = IMAGE_TARGET_Y + int(p["left_y"]  * scale),
             right_x = RIGHT_TARGET_X + center_offset_x + int(p["right_x"] * scale),
             right_y = IMAGE_TARGET_Y + int(p["right_y"] * scale),
             radius  = 60,
-        ))
+        )
+        print(f"[q_diff_points] diff[{i+1}] src=({p['left_x']},{p['left_y']}) -> screen_left=({dp.left_x},{dp.left_y}) screen_right=({dp.right_x},{dp.right_y}) r={dp.radius}")
+        out.append(dp)
     return out
 
 
