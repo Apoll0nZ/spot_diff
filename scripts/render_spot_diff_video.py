@@ -162,10 +162,10 @@ def q_diff_points(q_data: dict) -> List[DiffPoint]:
     out = []
     for p in q_data.get("diff_points", []):
         out.append(DiffPoint(
-            left_x  = LEFT_TARGET_X  + center_offset_x + int(p["left_x"]  * scale),
-            left_y  = IMAGE_TARGET_Y + int(p["left_y"]  * scale),
-            right_x = RIGHT_TARGET_X + center_offset_x + int(p["right_x"] * scale),
-            right_y = IMAGE_TARGET_Y + int(p["right_y"] * scale),
+            left_x  = CORRECT_LEFT_TARGET_X + center_offset_x + int(p["left_x"]  * scale),
+            left_y  = CORRECT_IMAGE_TARGET_Y + int(p["left_y"]  * scale),
+            right_x = CORRECT_RIGHT_TARGET_X + center_offset_x + int(p["right_x"] * scale),
+            right_y = CORRECT_IMAGE_TARGET_Y + int(p["right_y"] * scale),
             radius  = 60,
         ))
     return out

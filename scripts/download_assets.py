@@ -34,12 +34,10 @@ def main():
             total += 1
             print(f"downloaded: s3://{args.bucket}/{key} -> {local}")
 
-    # video_render.jsonをダウンロード（プレフィックスの親ディレクトリから）
-    parent_prefix = args.prefix.rsplit("/", 1)[0] if "/" in args.prefix else ""
-    video_render_key = f"{parent_prefix}/video_render.json" if parent_prefix else "video_render.json"
-    
+    # video_render.jsonをダウンロード（同じプレフィックスから）
     try:
         video_render_dest = args.dest / "video_render.json"
+        video_render_key = f"{args.prefix}video_render.json"
         s3.download_file(args.bucket, video_render_key, str(video_render_dest))
         print(f"downloaded: s3://{args.bucket}/{video_render_key} -> {video_render_dest}")
         total += 1
