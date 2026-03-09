@@ -105,15 +105,15 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # video render用データ（動画生成用）
         valid_diff_points = []
         
-        # mask_targetsからdiff_pointsを生成（cx/cyを中心座標として使用）
-        mask_targets = diff_json.get("mask_targets", [])
-        for target in mask_targets:
-            # cx/cyを左右の円の中心座標として使用
+        # diff_pointsからimage_x/image_yを参照して差分ポイントを生成
+        diff_points = diff_json.get("diff_points", [])
+        for dp in diff_points:
+            # image_x/image_yを元画像上の中心座標として使用
             diff_point = {
-                "left_x": target["cx"],
-                "left_y": target["cy"],
-                "right_x": target["cx"],
-                "right_y": target["cy"],
+                "left_x": dp["image_x"],
+                "left_y": dp["image_y"],
+                "right_x": dp["image_x"],
+                "right_y": dp["image_y"],
                 "radius": 60  # 表示用は固定60px（マスク半径とは別）
             }
             valid_diff_points.append(diff_point)
