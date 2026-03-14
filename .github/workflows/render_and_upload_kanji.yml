@@ -55,12 +55,25 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Prepare assets (dummy)
-        if: ${{ inputs.use_dummy_assets }}
+      - name: Prepare assets
         run: |
-          python scripts/generate_dummy_assets.py
           mkdir -p assets/input
-          cp -r assets/dummy/* assets/input/
+
+          # mp4/mp3はS3からダウンロード
+          python scripts/download_assets.py \
+            --bucket "${{ secrets.S3_BUCKET }}" \
+            --prefix "${{ secrets.S3_PREFIX }}" \
+            --dest assets/input
+
+          # 画像はGitリポジトリからコピー
+          cp assets/dummy/type1.png assets/input/type1.png
+          cp assets/dummy/type2.png assets/input/type2.png
+          cp assets/dummy/type3.png assets/input/type3.png
+          cp assets/dummy/main_question.png assets/input/main_question.png
+          for i in $(seq 1 10); do
+            cp assets/dummy/${i}t.png assets/input/${i}t.png
+          done
+
           # 構成タイプに応じてダミーJSONを選択
           if [ "${{ inputs.layout_mode }}" = "type1_type2" ]; then
             cp scripts/dummy_video_render_type1_type2.json assets/input/video_render.json
@@ -68,34 +81,8 @@ jobs:
             cp scripts/dummy_video_render_type3.json assets/input/video_render.json
           fi
 
-      - name: Debug assets
-        run: |
           echo "=== assets/input の中身 ==="
-          ls -la assets/input/
-          echo ""
-          echo "=== type画像の確認 ==="
-          ls -la assets/input/type*.png || echo "type画像が見つかりません"
-          echo ""
-          echo "=== main_question.png の確認 ==="
-          ls -la assets/input/main_question.png || echo "main_question.pngが見つかりません"
-
-      - name: Verify required assets
-        run: |
-          for f in type1.png type2.png type3.png main_question.png main_bgm.mp3 opening.mp4 ending.mp4; do
-            if [ ! -f "assets/input/$f" ]; then
-              echo "ERROR: assets/input/$f が見つかりません"
-              exit 1
-            fi
-          done
-          echo "必須アセット確認OK"
-
-      - name: Prepare assets (S3)
-        if: ${{ !inputs.use_dummy_assets }}
-        run: |
-          python scripts/download_assets.py \
-            --bucket "$S3_BUCKET" \
-            --prefix "$S3_PREFIX/${{ inputs.run_id }}/" \
-            --dest assets/input
+          find assets/input -type f | sort
 
       - name: Render video (no upload)
         if: ${{ !inputs.upload_to_youtube }}
