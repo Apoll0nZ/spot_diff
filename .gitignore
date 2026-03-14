@@ -3,5 +3,22 @@ __pycache__/
 .venv/
 out/
 assets/input/
-assets/dummy/
+# assets/dummy/ は基本除外
+assets/dummy/*.mp4
+assets/dummy/*.mp3
+# 画像はGit管理する
+!assets/dummy/type1.png
+!assets/dummy/type2.png
+!assets/dummy/type3.png
+!assets/dummy/main_question.png
+!assets/dummy/1t.png
+!assets/dummy/2t.png
+!assets/dummy/3t.png
+!assets/dummy/4t.png
+!assets/dummy/5t.png
+!assets/dummy/6t.png
+!assets/dummy/7t.png
+!assets/dummy/8t.png
+!assets/dummy/9t.png
+!assets/dummy/10t.png
 .DS_Store
