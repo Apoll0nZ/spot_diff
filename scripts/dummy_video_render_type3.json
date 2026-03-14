@@ -1,0 +1,136 @@
+{
+  "layout_mode": "type3",
+  "random_seed": 1,
+  "questions": [
+    {
+      "question_no": 1,
+      "type_cells": {
+        "top": "花", "left": "手", "right": "態", "bottom": "状"
+      },
+      "answer": "形",
+      "words": [
+        {"word": "花形", "reading": "はながた"},
+        {"word": "手形", "reading": "てがた"},
+        {"word": "形態", "reading": "けいたい"},
+        {"word": "形状", "reading": "けいじょう"}
+      ]
+    },
+    {
+      "question_no": 2,
+      "type_cells": {
+        "top": "電", "left": "汽", "right": "輪", "bottom": "掌"
+      },
+      "answer": "車",
+      "words": [
+        {"word": "電車", "reading": "でんしゃ"},
+        {"word": "汽車", "reading": "きしゃ"},
+        {"word": "車輪", "reading": "しゃりん"},
+        {"word": "車掌", "reading": "しゃしょう"}
+      ]
+    },
+    {
+      "question_no": 3,
+      "type_cells": {
+        "top": "自", "left": "天", "right": "動", "bottom": "体"
+      },
+      "answer": "然",
+      "words": [
+        {"word": "自然", "reading": "しぜん"},
+        {"word": "天然", "reading": "てんねん"},
+        {"word": "然動", "reading": "ぜんどう"},
+        {"word": "然体", "reading": "ぜんたい"}
+      ]
+    },
+    {
+      "question_no": 4,
+      "type_cells": {
+        "top": "親", "left": "友", "right": "切", "bottom": "情"
+      },
+      "answer": "愛",
+      "words": [
+        {"word": "親愛", "reading": "しんあい"},
+        {"word": "友愛", "reading": "ゆうあい"},
+        {"word": "愛切", "reading": "あいせつ"},
+        {"word": "愛情", "reading": "あいじょう"}
+      ]
+    },
+    {
+      "question_no": 5,
+      "type_cells": {
+        "top": "音", "left": "楽", "right": "声", "bottom": "器"
+      },
+      "answer": "楽",
+      "words": [
+        {"word": "音楽", "reading": "おんがく"},
+        {"word": "楽楽", "reading": "らくらく"},
+        {"word": "楽声", "reading": "がくせい"},
+        {"word": "楽器", "reading": "がっき"}
+      ]
+    },
+    {
+      "question_no": 6,
+      "type_cells": {
+        "top": "光", "left": "海", "right": "線", "bottom": "底"
+      },
+      "answer": "水",
+      "words": [
+        {"word": "光水", "reading": "こうすい"},
+        {"word": "海水", "reading": "かいすい"},
+        {"word": "水線", "reading": "すいせん"},
+        {"word": "水底", "reading": "すいてい"}
+      ]
+    },
+    {
+      "question_no": 7,
+      "type_cells": {
+        "top": "空", "left": "青", "right": "晴", "bottom": "雲"
+      },
+      "answer": "天",
+      "words": [
+        {"word": "空天", "reading": "くうてん"},
+        {"word": "青天", "reading": "せいてん"},
+        {"word": "天晴", "reading": "てんはれ"},
+        {"word": "天雲", "reading": "てんうん"}
+      ]
+    },
+    {
+      "question_no": 8,
+      "type_cells": {
+        "top": "日", "left": "春", "right": "光", "bottom": "風"
+      },
+      "answer": "暖",
+      "words": [
+        {"word": "日暖", "reading": "にちだん"},
+        {"word": "春暖", "reading": "しゅんだん"},
+        {"word": "暖光", "reading": "だんこう"},
+        {"word": "暖風", "reading": "だんぷう"}
+      ]
+    },
+    {
+      "question_no": 9,
+      "type_cells": {
+        "top": "金", "left": "银", "right": "属", "bottom": "行"
+      },
+      "answer": "铜",
+      "words": [
+        {"word": "金铜", "reading": "こんどう"},
+        {"word": "银铜", "reading": "ぎんどう"},
+        {"word": "铜属", "reading": "どうぞく"},
+        {"word": "铜行", "reading": "どうこう"}
+      ]
+    },
+    {
+      "question_no": 10,
+      "type_cells": {
+        "top": "宝", "left": "贵", "right": "器", "bottom": "版"
+      },
+      "answer": "石",
+      "words": [
+        {"word": "宝石", "reading": "ほうせき"},
+        {"word": "贵石", "reading": "きせき"},
+        {"word": "石器", "reading": "せっき"},
+        {"word": "石版", "reading": "せきばん"}
+      ]
+    }
+  ]
+}
