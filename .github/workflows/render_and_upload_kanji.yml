@@ -68,6 +68,27 @@ jobs:
             cp scripts/dummy_video_render_type3.json assets/input/video_render.json
           fi
 
+      - name: Debug assets
+        run: |
+          echo "=== assets/input の中身 ==="
+          ls -la assets/input/
+          echo ""
+          echo "=== type画像の確認 ==="
+          ls -la assets/input/type*.png || echo "type画像が見つかりません"
+          echo ""
+          echo "=== main_question.png の確認 ==="
+          ls -la assets/input/main_question.png || echo "main_question.pngが見つかりません"
+
+      - name: Verify required assets
+        run: |
+          for f in type1.png type2.png type3.png main_question.png main_bgm.mp3 opening.mp4 ending.mp4; do
+            if [ ! -f "assets/input/$f" ]; then
+              echo "ERROR: assets/input/$f が見つかりません"
+              exit 1
+            fi
+          done
+          echo "必須アセット確認OK"
+
       - name: Prepare assets (S3)
         if: ${{ !inputs.use_dummy_assets }}
         run: |
